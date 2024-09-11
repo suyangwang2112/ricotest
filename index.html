@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3D Model with Three.js</title>
   <style>
-    body {
+    body, html {
       margin: 0;
       overflow: hidden;
+      height: 100%;
     }
     canvas {
       display: block;
@@ -23,13 +24,13 @@
     // Basic Three.js scene setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // Add controls so the user can rotate, zoom, and pan
+    // Orbit controls for rotating and zooming
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; // Smooth controls
+    controls.enableDamping = true;
     controls.dampingFactor = 0.25;
     controls.enableZoom = true;
 
@@ -37,29 +38,31 @@
     const loader = new THREE.GLTFLoader();
     loader.load('https://raw.githubusercontent.com/suyangwang2112/ricotest/main/maglogo.glb', function(gltf) {
       scene.add(gltf.scene);
+      gltf.scene.scale.set(1, 1, 1);  // Adjust model scale if necessary
+      gltf.scene.position.set(0, 0, 0);  // Adjust model position if necessary
     }, undefined, function(error) {
       console.error('Error loading the model', error);
     });
 
-    // Add some basic lighting
-    const ambientLight = new THREE.AmbientLight(0x404040, 2); // Soft light
+    // Add some lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1);  // Soft light
     scene.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(1, 1, 0).normalize();
+    directionalLight.position.set(1, 1, 1).normalize();
     scene.add(directionalLight);
 
-    // Position the camera and animate
-    camera.position.z = 5;
+    // Set camera position and start rendering loop
+    camera.position.set(0, 2, 5);
     function animate() {
       requestAnimationFrame(animate);
-      controls.update(); // Required if damping is enabled
+      controls.update();  // Required if controls.enableDamping = true
       renderer.render(scene, camera);
     }
     animate();
 
-    // Make it responsive
-    window.addEventListener('resize', () => {
+    // Responsive canvas
+    window.addEventListener('resize', function() {
       const width = window.innerWidth;
       const height = window.innerHeight;
       renderer.setSize(width, height);
