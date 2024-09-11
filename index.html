@@ -36,7 +36,7 @@
 
     // Load your 3D model
     const loader = new THREE.GLTFLoader();
-    loader.load('https://raw.githubusercontent.com/suyangwang2112/ricotest/main/maglogo.glb', function(gltf) {
+    loader.load('https://raw.githubusercontent.com/suyangwang2112/ricotest/main/flower.glb', function(gltf) {
       scene.add(gltf.scene);
       gltf.scene.scale.set(1, 1, 1);  // Adjust model scale if necessary
       gltf.scene.position.set(0, 0, 0);  // Adjust model position if necessary
