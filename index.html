@@ -3,12 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sketchfab 3D Model Viewer</title>
+  <title>3D Model Full Screen</title>
   <style>
-    body { margin: 0; }
-    #sketchfab-embed {
+    /* Full-screen container for the 3D model */
+    body, html {
+      margin: 0;
+      padding: 0;
       width: 100%;
-      height: 100vh;
+      height: 100%;
+      overflow: hidden; /* Ensure no scrolling */
+    }
+    #sketchfab-embed {
+      width: 100vw; /* Full width */
+      height: 100vh; /* Full height */
     }
   </style>
 </head>
@@ -27,8 +34,8 @@
     // Initialize the Sketchfab API client
     var client = new Sketchfab('1.11.0', iframe);
     
-    // Model UID (replace this with your Sketchfab model UID)
-    var modelUID = 'mag-logo-dbbc552bd70745aaa6dfd200652434c3';  // Example: 'abc123xyz'
+    // Model UID (replace with your Sketchfab model UID)
+    var modelUID = 'dbbc552bd70745aaa6dfd200652434c3';  // Your model's UID
     
     // Options for loading the model
     var options = {
@@ -43,10 +50,10 @@
         console.log('Sketchfab API initialization failed');
       },
       autostart: 1,  // Automatically start the model
-      autospin: 0,   // Optional: model will auto-rotate
-      camera: 0,     // Optional: custom camera angles can be set
-      preload: 1,    // Preload the model immediately
-      annotations_visible: 0  // Disable annotations if you don't want them
+      preload: 1,    // Preload the model so it’s immediately visible
+      annotations_visible: 0,  // Hide annotations
+      camera: 0,  // Default camera view, you can customize it
+      autospin: 0  // Optional: You can enable autospin by setting this to 1
     };
 
     // Load the model into the iframe container
