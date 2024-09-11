@@ -3,16 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Model on GitHub Pages</title>
+  <title>Sketchfab 3D Model Viewer</title>
+  <style>
+    body { margin: 0; }
+    #sketchfab-embed {
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
 </head>
 <body>
-  <h1>My 3D Model</h1>
 
-  <!-- Sketchfab iframe embed code -->
-  <iframe title="3D Model Title" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" 
-  allow="autoplay; fullscreen; xr-spatial-tracking" 
-  xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share 
-  width="640" height="480" src="https://sketchfab.com/models/dbbc552bd70745aaa6dfd200652434c3/embed"></iframe>
+  <!-- Container for the Sketchfab model -->
+  <div id="sketchfab-embed"></div>
+
+  <!-- Include Sketchfab Viewer API -->
+  <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.11.0.js"></script>
+
+  <script>
+    // Get the container for embedding the model
+    var iframe = document.getElementById('sketchfab-embed');
+    
+    // Initialize the Sketchfab API client
+    var client = new Sketchfab('1.11.0', iframe);
+    
+    // Model UID (replace this with your Sketchfab model UID)
+    var modelUID = 'pqIPr';  // Example: 'abc123xyz'
+    
+    // Options for loading the model
+    var options = {
+      success: function onSuccess(api) {
+        console.log('Sketchfab API initialized successfully');
+        api.start();  // Automatically start the model
+        api.addEventListener('viewerready', function() {
+          console.log('Viewer is ready');
+        });
+      },
+      error: function onError() {
+        console.log('Sketchfab API initialization failed');
+      },
+      autostart: 1,  // Automatically start the model
+      autospin: 0,   // Optional: model will auto-rotate
+      camera: 0,     // Optional: custom camera angles can be set
+      preload: 1,    // Preload the model immediately
+      annotations_visible: 0  // Disable annotations if you don't want them
+    };
+
+    // Load the model into the iframe container
+    client.init(modelUID, options);
+  </script>
 
 </body>
 </html>
