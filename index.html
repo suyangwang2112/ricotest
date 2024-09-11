@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Model with Three.js</title>
+  <title>3D Model with Click Effect</title>
   <style>
     body, html {
       margin: 0;
@@ -21,47 +21,80 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
   <script>
-    // Basic Three.js scene setup
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // Orbit controls for rotating and zooming
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
     controls.enableZoom = true;
 
-    // Load your 3D model
+    // Load the flower model
     const loader = new THREE.GLTFLoader();
+    let model;
     loader.load('https://raw.githubusercontent.com/suyangwang2112/ricotest/main/flower.glb', function(gltf) {
-      scene.add(gltf.scene);
-      gltf.scene.scale.set(1, 1, 1);  // Adjust model scale if necessary
-      gltf.scene.position.set(0, 0, 0);  // Adjust model position if necessary
+      model = gltf.scene;
+      model.scale.set(1, 1, 1);
+      model.position.set(0, 0, 0);
+      scene.add(model);
     }, undefined, function(error) {
       console.error('Error loading the model', error);
     });
 
-    // Add some lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1);  // Soft light
+    // Add lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
-
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(1, 1, 1).normalize();
     scene.add(directionalLight);
 
-    // Set camera position and start rendering loop
+    // Set the camera position
     camera.position.set(0, 2, 5);
+
+    // Floating effect
+    let clock = new THREE.Clock();
+
+    // Click-to-trigger water flow effect (scale animation)
+    window.addEventListener('click', () => {
+      if (model) {
+        let initialScale = model.scale.clone();
+        let targetScale = new THREE.Vector3(1.2, 1.2, 1.2);  // Scale up slightly
+
+        let duration = 0.3;  // Duration of the effect
+        let tween = new TWEEN.Tween(initialScale)
+          .to(targetScale, duration * 1000)
+          .easing(TWEEN.Easing.Quadratic.Out)
+          .onUpdate(() => {
+            model.scale.copy(initialScale);
+          })
+          .onComplete(() => {
+            let reverseTween = new TWEEN.Tween(model.scale)
+              .to({ x: 1, y: 1, z: 1 }, duration * 1000)
+              .easing(TWEEN.Easing.Quadratic.In)
+              .start();
+          })
+          .start();
+      }
+    });
+
+    // Render loop
     function animate() {
       requestAnimationFrame(animate);
-      controls.update();  // Required if controls.enableDamping = true
+      let time = clock.getElapsedTime();
+      if (model) {
+        model.position.y = Math.sin(time * 2) * 0.05;  // Subtle floating
+      }
+
+      controls.update();
+      TWEEN.update();  // Update the tween animations
       renderer.render(scene, camera);
     }
     animate();
 
-    // Responsive canvas
+    // Handle resizing
     window.addEventListener('resize', function() {
       const width = window.innerWidth;
       const height = window.innerHeight;
@@ -70,5 +103,6 @@
       camera.updateProjectionMatrix();
     });
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 </body>
 </html>
