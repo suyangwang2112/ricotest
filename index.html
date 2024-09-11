@@ -3,37 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Model Example</title>
-  <style>
-    body { margin: 0; }
-    canvas { display: block; }
-  </style>
+  <title>3D Model on GitHub Pages</title>
 </head>
 <body>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <h1>My 3D Model</h1>
 
-  <script>
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+  <!-- Sketchfab iframe embed code -->
+  <div class="sketchfab-embed-wrapper"> <iframe title="mag_logo" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/dbbc552bd70745aaa6dfd200652434c3/embed"> </iframe> <p style="font-size: 13px; font-weight: normal; margin: 5px; color: #4A4A4A;"> <a href="https://sketchfab.com/3d-models/mag-logo-dbbc552bd70745aaa6dfd200652434c3?utm_medium=embed&utm_campaign=share-popup&utm_content=dbbc552bd70745aaa6dfd200652434c3" target="_blank" rel="nofollow" style="font-weight: bold; color: #1CAAD9;"> mag_logo </a> by <a href="https://sketchfab.com/Rico.Suyang.Wang?utm_medium=embed&utm_campaign=share-popup&utm_content=dbbc552bd70745aaa6dfd200652434c3" target="_blank" rel="nofollow" style="font-weight: bold; color: #1CAAD9;"> Rico.Suyang.Wang </a> on <a href="https://sketchfab.com?utm_medium=embed&utm_campaign=share-popup&utm_content=dbbc552bd70745aaa6dfd200652434c3" target="_blank" rel="nofollow" style="font-weight: bold; color: #1CAAD9;">Sketchfab</a></p></div>
 
-    const loader = new THREE.GLTFLoader();
-    loader.load('https://skfb.ly/pqIPr', function (gltf) {
-      scene.add(gltf.scene);
-      renderer.render(scene, camera);
-    });
-
-    camera.position.z = 5;
-
-    const animate = function () {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    };
-
-    animate();
-  </script>
 </body>
 </html>
