@@ -3,61 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Model Full Screen</title>
+  <title>3D Model with Three.js</title>
   <style>
-    body, html {
+    body {
       margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
       overflow: hidden;
     }
-    #sketchfab-embed {
-      width: 100vw;
-      height: 100vh;
-      background-color: #000; /* Add a background to see if the container is rendering */
+    canvas {
+      display: block;
     }
   </style>
 </head>
 <body>
-
-  <!-- Full screen container for the Sketchfab model -->
-  <div id="sketchfab-embed"></div>
-
-  <!-- Load Sketchfab Viewer API -->
-  <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.11.0.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
   <script>
-    // Log to confirm script is running
-    console.log("Sketchfab script loaded and running");
+    // Basic Three.js scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-    var iframe = document.getElementById('sketchfab-embed');
-    var client = new Sketchfab('1.11.0', iframe);
+    // Add controls so the user can rotate, zoom, and pan
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; // Smooth controls
+    controls.dampingFactor = 0.25;
+    controls.enableZoom = true;
 
-    // Model UID from Sketchfab
-    var modelUID = 'dbbc552bd70745aaa6dfd200652434c3';
+    // Load your 3D model
+    const loader = new THREE.GLTFLoader();
+    loader.load('https://raw.githubusercontent.com/suyangwang2112/ricotest/main/maglogo.glb', function(gltf) {
+      scene.add(gltf.scene);
+    }, undefined, function(error) {
+      console.error('Error loading the model', error);
+    });
 
-    // Options for the API call
-    var options = {
-      autostart: 1,
-      preload: 1, // Preload the model to reduce load time
-      annotations_visible: 0 // Hide annotations
-    };
+    // Add some basic lighting
+    const ambientLight = new THREE.AmbientLight(0x404040, 2); // Soft light
+    scene.add(ambientLight);
 
-    // Initialize Sketchfab Viewer
-    client.init(modelUID, {
-      success: function(api) {
-        console.log("Sketchfab API initialized successfully");
-        api.start();
-        api.addEventListener('viewerready', function() {
-          console.log("Model is ready and visible");
-        });
-      },
-      error: function() {
-        console.error("Sketchfab API initialization failed");
-      }
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(1, 1, 0).normalize();
+    scene.add(directionalLight);
+
+    // Position the camera and animate
+    camera.position.z = 5;
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update(); // Required if damping is enabled
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Make it responsive
+    window.addEventListener('resize', () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
     });
   </script>
-
 </body>
 </html>
