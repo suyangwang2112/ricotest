@@ -53,30 +53,43 @@
     camera.position.set(0, 2, 5);
 
     let clock = new THREE.Clock();
+    
+    // Raycaster for detecting model clicks
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
 
-    // Click-to-trigger water flow effect (scale animation)
-    window.addEventListener('click', () => {
-      if (model) {
+    // Function to handle mouse click
+    function onClick(event) {
+      // Update the mouse variable
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      
+      // Raycast from the camera to the mouse position
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true); // Check for all children objects in the scene
+      
+      if (intersects.length > 0 && intersects[0].object === model) {
         let initialScale = model.scale.clone();
-        let targetScale = new THREE.Vector3(1.2, 1.2, 1.2);  // Scale up slightly
-
-        // Scale up on click
+        let targetScale = new THREE.Vector3(1.3, 1.3, 1.3);  // Scale up slightly
+        
+        // Smooth and fluid scaling
         let upTween = new TWEEN.Tween(initialScale)
-          .to(targetScale, 300)
-          .easing(TWEEN.Easing.Quadratic.Out)
+          .to(targetScale, 500)  // 0.5 second duration
+          .easing(TWEEN.Easing.Sinusoidal.Out)  // Smooth water-like effect
           .onUpdate(() => {
             model.scale.copy(initialScale);
           })
           .onComplete(() => {
-            // Scale back down after animation
             let downTween = new TWEEN.Tween(model.scale)
-              .to({ x: 1, y: 1, z: 1 }, 300)
-              .easing(TWEEN.Easing.Quadratic.In)
+              .to({ x: 1, y: 1, z: 1 }, 500)  // Scale back down over 0.5 second
+              .easing(TWEEN.Easing.Sinusoidal.In)  // Smooth easing back
               .start();
           })
           .start();
       }
-    });
+    }
+
+    window.addEventListener('click', onClick);
 
     function animate() {
       requestAnimationFrame(animate);
