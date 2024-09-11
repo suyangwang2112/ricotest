@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Model Viewer</title>
+  <title>3D Model Full Screen</title>
   <style>
-    /* Make the model full-screen */
     body, html {
       margin: 0;
       padding: 0;
@@ -16,38 +15,46 @@
     #sketchfab-embed {
       width: 100vw;
       height: 100vh;
+      background-color: #000; /* Add a background to see if the container is rendering */
     }
   </style>
 </head>
 <body>
 
-  <!-- Full-screen container for the model -->
+  <!-- Full screen container for the Sketchfab model -->
   <div id="sketchfab-embed"></div>
 
-  <!-- Include Sketchfab API -->
+  <!-- Load Sketchfab Viewer API -->
   <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.11.0.js"></script>
 
   <script>
+    // Log to confirm script is running
+    console.log("Sketchfab script loaded and running");
+
     var iframe = document.getElementById('sketchfab-embed');
     var client = new Sketchfab('1.11.0', iframe);
 
-    var modelUID = 'dbbc552bd70745aaa6dfd200652434c3';  // Your model UID
+    // Model UID from Sketchfab
+    var modelUID = 'dbbc552bd70745aaa6dfd200652434c3';
 
+    // Options for the API call
     var options = {
-      autostart: 1,          // Start immediately
-      preload: 1,            // Preload the model
+      autostart: 1,
+      preload: 1, // Preload the model to reduce load time
       annotations_visible: 0 // Hide annotations
     };
 
+    // Initialize Sketchfab Viewer
     client.init(modelUID, {
-      success: function onSuccess(api) {
+      success: function(api) {
+        console.log("Sketchfab API initialized successfully");
         api.start();
         api.addEventListener('viewerready', function() {
-          console.log('Viewer is ready');
+          console.log("Model is ready and visible");
         });
       },
-      error: function onError() {
-        console.error('Sketchfab API initialization failed');
+      error: function() {
+        console.error("Sketchfab API initialization failed");
       }
     });
   </script>
