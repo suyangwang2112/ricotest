@@ -19,6 +19,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 
   <script>
     const scene = new THREE.Scene();
@@ -32,9 +33,8 @@
     controls.dampingFactor = 0.25;
     controls.enableZoom = true;
 
-    // Load the flower model
-    const loader = new THREE.GLTFLoader();
     let model;
+    const loader = new THREE.GLTFLoader();
     loader.load('https://raw.githubusercontent.com/suyangwang2112/ricotest/main/flower.glb', function(gltf) {
       model = gltf.scene;
       model.scale.set(1, 1, 1);
@@ -44,17 +44,14 @@
       console.error('Error loading the model', error);
     });
 
-    // Add lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(1, 1, 1).normalize();
     scene.add(directionalLight);
 
-    // Set the camera position
     camera.position.set(0, 2, 5);
 
-    // Floating effect
     let clock = new THREE.Clock();
 
     // Click-to-trigger water flow effect (scale animation)
@@ -63,16 +60,17 @@
         let initialScale = model.scale.clone();
         let targetScale = new THREE.Vector3(1.2, 1.2, 1.2);  // Scale up slightly
 
-        let duration = 0.3;  // Duration of the effect
-        let tween = new TWEEN.Tween(initialScale)
-          .to(targetScale, duration * 1000)
+        // Scale up on click
+        let upTween = new TWEEN.Tween(initialScale)
+          .to(targetScale, 300)
           .easing(TWEEN.Easing.Quadratic.Out)
           .onUpdate(() => {
             model.scale.copy(initialScale);
           })
           .onComplete(() => {
-            let reverseTween = new TWEEN.Tween(model.scale)
-              .to({ x: 1, y: 1, z: 1 }, duration * 1000)
+            // Scale back down after animation
+            let downTween = new TWEEN.Tween(model.scale)
+              .to({ x: 1, y: 1, z: 1 }, 300)
               .easing(TWEEN.Easing.Quadratic.In)
               .start();
           })
@@ -80,7 +78,6 @@
       }
     });
 
-    // Render loop
     function animate() {
       requestAnimationFrame(animate);
       let time = clock.getElapsedTime();
@@ -89,12 +86,11 @@
       }
 
       controls.update();
-      TWEEN.update();  // Update the tween animations
+      TWEEN.update();  // Ensure the TWEEN animations are updated
       renderer.render(scene, camera);
     }
     animate();
 
-    // Handle resizing
     window.addEventListener('resize', function() {
       const width = window.innerWidth;
       const height = window.innerHeight;
@@ -103,6 +99,5 @@
       camera.updateProjectionMatrix();
     });
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 </body>
 </html>
